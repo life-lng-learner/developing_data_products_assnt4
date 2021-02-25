@@ -1,0 +1,88 @@
+---
+title: "Developing Data Products - Week 4 Assignment"
+author: "PD"
+date: "24/02/2021"
+output: ioslides_presentation
+logo: title-back-image.png
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+library(tidyquant)
+
+```
+
+
+## Summary
+
+<div class="red justified">
+This presentation if part of week 4 assignment of the coursera Developing Data Products
+Course. In this assignment, a shiny app plots data of a stock ticker entered by the user. The app provides options to the user to change the period of display and include additional plots about the selected stock ticker such as open, low, high and closing price. 
+
+The App will allow users to quickly observe the performance of a company on the
+stock market.
+
+The app can be run from: https://lifelnglearner.shinyapps.io/stockmarket_app/
+
+Code for the app can be download from: https://github.com/life-lng-learner/developing_data_products_assnt4
+
+</div>
+
+## Application Core
+<div class="red justified">
+The core part of this application is obtaining stock ticker data. The rest of it 
+utilizes plotting functions to plot the data. Stock ticker data is obtained using the library tidyquant and the funcion tq_get. 
+
+To obtain and view the first few rows of Google's stock price, the following command would need to be executed:
+</div>
+
+<div class="blue justified">
+```{r, echo=TRUE}
+head(tq_get('goog',from='2021-02-10',to='2021-02-21'))
+
+```
+</div>
+
+```{css,echo=FALSE}
+.code_chunk {
+  font-size: 2px;
+}
+```
+
+## The User Interface
+<div class="red justified">
+The UI code (ui.R) takes in text, date and checkbox input for the following variables:
+
+1. stock_ticker (text input)
+2. from_date (date input)
+3. to_date (date input)
+4. Open (checkbox input)
+5. High (checkbox input)
+6. Low (checkbox input)
+7. Close (checkbox input)
+</div>
+
+## The Server
+
+<div class="red justified">
+In the Server plot, first stock ticker data is obtained using the following code:
+</div>
+
+```{r, eval=FALSE, echo=TRUE}
+stck_ticker<-tq_get(input$stock_ticker,from=input$from_date,
+                    to=input$to_date)
+```
+
+<div class="red justified">
+This is followed by drawing a ggplot with the ticker data's adjusted price and then a geom_line for each of the check box inputs:
+</div>
+```{r, eval=FALSE, echo=TRUE}
+stck_plot<-stck_ticker%>%
+ggplot(aes(x=stck_ticker$date,y=stck_ticker$adjusted))+
+geom_line(color="red") +
+ggtitle(paste("Stock Performance Of Ticker: ",input$stock_ticker)) +
+theme(plot.title = element_text(hjust=0.5))+
+xlab("Date") +
+ylab("Price($)")
+```
